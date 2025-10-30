@@ -15,6 +15,7 @@ export interface PredictionResult {
     predicted_rul: number;
 }
 
+import { Loader } from "lucide-react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 const FEATURE_METADATA = [
@@ -129,9 +130,9 @@ export default function RULPredictor() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="mt-8 w-full py-3 bg-accent-warm text-base-dark font-semibold text-lg border border-base-dark rounded-none hover:bg-yellow-500 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="mt-8 w-full flex justify-center items-center bg-yellow-500 text-black border border-black p-3 h-12 text-xl font-semibold uppercase cursor-pointer  transition-all duration-100 ease-in-out  shadow-[4px_4px_0px_0px_#000000]  hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000000]  active:translate-x-[4px] active:translate-y-[4px] active:shadow-[0px_0px_0px_#00000040]  disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? "Calculating RUL..." : "Predict Remaining Useful Life"}
+                            {loading ? <Loader className="size-5 animate-spin" /> : "Predict Remaining Useful Life"}
                         </button>
 
                         {error && <p className="mt-4 p-3 bg-red-100 border border-red-500 text-red-700 text-sm rounded-none">Error: {error}</p>}
