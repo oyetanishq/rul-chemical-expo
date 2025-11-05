@@ -18,10 +18,8 @@ body {
        to create thin horizontal and vertical lines. Adjust background-size
        to change the mesh cell size. */
     background-color: var(--background);
-    background-image:
-        linear-gradient(rgba(2,6,23,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(2,6,23,0.03) 1px, transparent 1px);
-    background-size: 24px 24px, 24px 24px;
+    background-image: linear-gradient(rgba(2, 6, 23, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(2, 6, 23, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px, 20px 20px;
     background-position: 0 0, 0 0;
     color: var(--foreground);
 
