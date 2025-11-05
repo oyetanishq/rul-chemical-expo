@@ -60,6 +60,8 @@ export default function RULPredictor() {
     const [prediction, setPrediction] = useState<PredictionResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    // Track which feature/input is currently active (focused or hovered).
+    const [activeFeature, setActiveFeature] = useState<string | null>(null);
 
     useEffect(() => {
         (async () => await fetch(process.env.NEXT_PUBLIC_PREDICT_API_URL!))();
@@ -137,6 +139,11 @@ export default function RULPredictor() {
                                         placeholder="Enter value"
                                         className="p-3 bg-base-light border border-base-dark text-base-dark focus:outline-none focus:border-accent-warm rounded-none transition-colors"
                                         required
+                                        // Set active feature on focus (keyboard) and clear on blur.
+                                        // Hover handlers removed so highlight only appears when the input is active.
+                                        onFocus={() => setActiveFeature(key)}
+                                        onBlur={() => setActiveFeature(null)}
+                                        aria-describedby={`desc-${key}`}
                                     />
                                 </div>
                             ))}
@@ -169,11 +176,16 @@ export default function RULPredictor() {
                     {/* Output and Description Column (Col 3) */}
                     <div className="lg:col-span-1 space-y-8">
                         {/* Feature Description Panel */}
-                        <div className="p-6 border border-base-dark bg-white rounded-none shadow-lg">
+                        <div className="p-4 border border-base-dark bg-white rounded-none shadow-lg">
                             <h3 className="text-xl font-bold mb-4 text-base-dark">Feature Overview</h3>
-                            <ul className="space-y-3 text-sm text-stone-700">
+                            <ul className="text-sm text-stone-700">
                                 {FEATURE_METADATA.map(({ key, label, description }) => (
-                                    <li key={key} className="border-b border-stone-200 pb-2">
+                                    <li
+                                        key={key}
+                                        id={`desc-${key}`}
+                                        // highlight when input is focused or hovered
+                                        className={`border-b border-stone-200 transition-colors p-3 ${activeFeature === key && "bg-sky-100"}`}
+                                    >
                                         <span className="font-semibold text-base-dark">{label}: </span>
                                         {description}
                                     </li>
