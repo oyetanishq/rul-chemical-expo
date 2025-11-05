@@ -184,9 +184,9 @@ export default function RULPredictor() {
                                         key={key}
                                         id={`desc-${key}`}
                                         // highlight when input is focused or hovered
-                                        className={`border-b border-stone-200 transition-colors p-3 ${activeFeature === key && "bg-sky-100"}`}
+                                        className={`border-b border-stone-200 transition-colors p-3 ${activeFeature === key && "bg-yellow-200"}`}
                                     >
-                                        <span className="font-semibold text-base-dark">{label}: </span>
+                                        <span className="italic">{label}:</span>&ensp;
                                         {description}
                                     </li>
                                 ))}

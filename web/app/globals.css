@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-    --background: #ffffff;
+    /* slightly off-white base so the mesh is visible */
+    --background: #f8fafc;
     --foreground: #171717;
 }
 
@@ -13,7 +14,15 @@
 }
 
 body {
-    background: var(--background);
+    /* Use a subtle cross-box / mesh background using two linear-gradients
+       to create thin horizontal and vertical lines. Adjust background-size
+       to change the mesh cell size. */
+    background-color: var(--background);
+    background-image:
+        linear-gradient(rgba(2,6,23,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(2,6,23,0.03) 1px, transparent 1px);
+    background-size: 24px 24px, 24px 24px;
+    background-position: 0 0, 0 0;
     color: var(--foreground);
 
     font-family: var(--font-ubuntu);
