@@ -9,6 +9,7 @@ export interface BatteryData {
     time_at_4_15: number | string;
     time_constant_current: number | string;
     charging_time: number | string;
+    actual_rul: number | string;
 }
 
 export interface PredictionResult {
@@ -48,11 +49,47 @@ const FEATURE_METADATA = [
 const MODEL_INFO = {
     name: "Random Forest",
     metrics: {
-        mse: 12.34,
-        rmse: 3.51,
-        r2: 0.87,
+        mae: 2.13,
+        rmse: 3.79,
+        r2: 0.99,
     },
 };
+
+const syntheticData: BatteryData[] = [
+    {
+        cycle_index: 33.0,
+        discharge_time: 2226.38,
+        decrement: 847.2030000002123,
+        max_voltage_discharge: 4.045,
+        min_voltage_dcharge: 3.377,
+        time_at_4_15: 5090.360000000102,
+        time_constant_current: 6070.36,
+        charging_time: 9149.66,
+        actual_rul: 1080,
+    },
+    {
+        cycle_index: 101.0,
+        discharge_time: 2126.97,
+        decrement: 762.0,
+        max_voltage_discharge: 4.006,
+        min_voltage_dcharge: 3.41,
+        time_at_4_15: 4803.513000000268,
+        time_constant_current: 5768.31,
+        charging_time: 8899.03,
+        actual_rul: 1012,
+    },
+    {
+        cycle_index: 60.0,
+        discharge_time: 2188.19,
+        decrement: 806.4369999996852,
+        max_voltage_discharge: 4.044,
+        min_voltage_dcharge: 3.389,
+        time_at_4_15: 4964.313000000315,
+        time_constant_current: 5937.31,
+        charging_time: 9059.31,
+        actual_rul: 1053,
+    },
+];
 
 const initialFormData: BatteryData = {
     cycle_index: "",
@@ -63,6 +100,7 @@ const initialFormData: BatteryData = {
     time_at_4_15: "",
     time_constant_current: "",
     charging_time: "",
+    actual_rul: "",
 };
 
 export default function RULPredictor() {
@@ -76,6 +114,10 @@ export default function RULPredictor() {
     useEffect(() => {
         (async () => await fetch(process.env.NEXT_PUBLIC_PREDICT_API_URL!))();
     }, []);
+
+    useEffect(() => {
+        setPrediction(null);
+    }, [formData]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -129,47 +171,73 @@ export default function RULPredictor() {
                     </p>
                 </header>
 
-                {/* Top info bar: model name + metrics with hover tooltips explaining each metric */}
-                <div className="mb-10 p-3 border border-base-dark rounded-none bg-white shadow-sm flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <strong className="text-sm uppercase tracking-wide text-stone-700">Model</strong>
-                        <span className="text-base font-bold">{MODEL_INFO.name}</span>
+                {/* Top info bar */}
+                <div className="mb-4 p-3 border border-base-dark rounded-none bg-white shadow-sm flex flex-col items-center gap-4">
+                    {/* metrics */}
+                    <div className="w-full flex justify-between flex-col sm:flex-row">
+                        <div className="flex items-center gap-3">
+                            <strong className="text-sm uppercase tracking-wide text-stone-700">Model</strong>
+                            <span className="text-base font-bold">{MODEL_INFO.name}</span>
+                        </div>
+
+                        <div className="flex items-center gap-3 w-full sm:w-fit justify-between">
+                            <div className="hidden sm:flex text-sm text-stone-600">Metrics:</div>
+                            <div className="flex items-center gap-2">
+                                <span
+                                    role="img"
+                                    aria-label="Mean Absolute Error"
+                                    title="Mean Absolute Error (MAE): average absolute difference between predicted and actual values. Lower is better."
+                                    className="px-3 py-1 w-[90px] border border-stone-200 rounded bg-stone-50 text-sm"
+                                >
+                                    MSE: {MODEL_INFO.metrics.mae}
+                                </span>
+
+                                <span
+                                    role="img"
+                                    aria-label="Root Mean Squared Error"
+                                    title="Root Mean Squared Error (RMSE): square root of MSE; same units as target. Lower is better."
+                                    className="px-3 py-1 text-nowrap w-[90px] border border-stone-200 rounded bg-stone-50 text-sm"
+                                >
+                                    RMSE: {MODEL_INFO.metrics.rmse}
+                                </span>
+
+                                <span
+                                    role="img"
+                                    aria-label="R squared"
+                                    title="R² (Coefficient of Determination): proportion of variance explained by the model. 1 is perfect, 0 means no explanatory power."
+                                    className="px-3 py-1 w-[90px] border border-stone-200 rounded bg-stone-50 text-sm"
+                                >
+                                    R²: {MODEL_INFO.metrics.r2}
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <div className="text-sm text-stone-600">Metrics:</div>
+                    {/* synthetic sample buttons */}
+                    <div className="w-full flex justify-between flex-col sm:flex-row">
+                        <div className="flex items-center gap-3">
+                            <strong className="text-sm uppercase tracking-wide font-bold">Sample Data</strong>
+                        </div>
+
                         <div className="flex items-center gap-2">
-                            <span
-                                role="img"
-                                aria-label="Mean Squared Error"
-                                title="Mean Squared Error (MSE): average squared difference between predicted and actual values. Lower is better."
-                                className="px-3 py-1 border border-stone-200 rounded bg-stone-50 text-sm"
-                            >
-                                MSE: {MODEL_INFO.metrics.mse}
-                            </span>
-
-                            <span
-                                role="img"
-                                aria-label="Root Mean Squared Error"
-                                title="Root Mean Squared Error (RMSE): square root of MSE; same units as target. Lower is better."
-                                className="px-3 py-1 border border-stone-200 rounded bg-stone-50 text-sm"
-                            >
-                                RMSE: {MODEL_INFO.metrics.rmse}
-                            </span>
-
-                            <span
-                                role="img"
-                                aria-label="R squared"
-                                title="R² (Coefficient of Determination): proportion of variance explained by the model. 1 is perfect, 0 means no explanatory power."
-                                className="px-3 py-1 border border-stone-200 rounded bg-stone-50 text-sm"
-                            >
-                                R²: {MODEL_INFO.metrics.r2}
-                            </span>
+                            {Array.from({ length: 3 }).map((_, index) => {
+                                return (
+                                    <button
+                                        key={"sample-data-" + index}
+                                        type="button"
+                                        title="Fill form with sample data 1"
+                                        onClick={() => setFormData(syntheticData[index])}
+                                        className="px-3 py-1 cursor-pointer w-[90px] text-sm border border-stone-200 rounded bg-white hover:bg-stone-50"
+                                    >
+                                        Sample {index + 1}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
 
-                <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <main className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* Input Form Column (Col 1-2) */}
                     <form onSubmit={handleSubmit} className="lg:col-span-2 p-6 border border-base-dark bg-white rounded-none shadow-lg">
                         <h2 className="text-2xl font-bold mb-6 border-b border-base-dark pb-2 text-accent-warm">Input Battery Cycle Features</h2>
@@ -208,6 +276,17 @@ export default function RULPredictor() {
                         </button>
 
                         {error && <p className="mt-4 p-3 bg-red-100 border border-red-500 text-red-700 text-sm rounded-none">Error: {error}</p>}
+
+                        {/* Actual RUL */}
+                        {formData.actual_rul && (
+                            <div className="p-6 border border-base-dark bg-base-dark text-white rounded-none shadow-lg mt-8">
+                                <h2 className="text-2xl font-bold mb-4 border-b border-white/50 pb-2 text-black">Actual RUL</h2>
+                                <div className="text-center">
+                                    <p className="text-5xl font-extrabold text-black">{formData.actual_rul.toLocaleString()}</p>
+                                    <p className="text-lg font-medium text-amber-300 mt-2">Remaining Cycles</p>
+                                </div>
+                            </div>
+                        )}
 
                         {/* RUL Output */}
                         <div className="p-6 border border-base-dark bg-base-dark text-white rounded-none shadow-lg mt-8">
