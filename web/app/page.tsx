@@ -44,6 +44,16 @@ const FEATURE_METADATA = [
     { key: "charging_time", label: "Charging Time (s)", unit: "seconds", description: "The total time the battery took to complete the entire charge cycle (CC + CV)." },
 ] as const;
 
+// Metrics from the Random Forest training (placeholders — replace with real values as needed)
+const MODEL_INFO = {
+    name: "Random Forest",
+    metrics: {
+        mse: 12.34,
+        rmse: 3.51,
+        r2: 0.87,
+    },
+};
+
 const initialFormData: BatteryData = {
     cycle_index: "",
     discharge_time: "",
@@ -112,12 +122,52 @@ export default function RULPredictor() {
     return (
         <div className="min-h-dvh bg-base-light text-base-dark p-8">
             <div className="max-w-6xl mx-auto">
-                <header className="mb-10 p-6 border border-base-dark rounded-none bg-white shadow-lg">
+                <header className="mb-4 p-6 border border-base-dark rounded-none bg-white shadow-lg">
                     <h1 className="text-4xl font-extrabold text-base-dark mb-2">RUL Prediction Engine</h1>
                     <p className="text-lg text-stone-600">
                         Estimate the Remaining Useful Life (RUL) of <b>NMC-LCO 18650 Li-ion batteries</b> based on cycle-level degradation features.
                     </p>
                 </header>
+
+                {/* Top info bar: model name + metrics with hover tooltips explaining each metric */}
+                <div className="mb-10 p-3 border border-base-dark rounded-none bg-white shadow-sm flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <strong className="text-sm uppercase tracking-wide text-stone-700">Model</strong>
+                        <span className="text-base font-bold">{MODEL_INFO.name}</span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <div className="text-sm text-stone-600">Metrics:</div>
+                        <div className="flex items-center gap-2">
+                            <span
+                                role="img"
+                                aria-label="Mean Squared Error"
+                                title="Mean Squared Error (MSE): average squared difference between predicted and actual values. Lower is better."
+                                className="px-3 py-1 border border-stone-200 rounded bg-stone-50 text-sm"
+                            >
+                                MSE: {MODEL_INFO.metrics.mse}
+                            </span>
+
+                            <span
+                                role="img"
+                                aria-label="Root Mean Squared Error"
+                                title="Root Mean Squared Error (RMSE): square root of MSE; same units as target. Lower is better."
+                                className="px-3 py-1 border border-stone-200 rounded bg-stone-50 text-sm"
+                            >
+                                RMSE: {MODEL_INFO.metrics.rmse}
+                            </span>
+
+                            <span
+                                role="img"
+                                aria-label="R squared"
+                                title="R² (Coefficient of Determination): proportion of variance explained by the model. 1 is perfect, 0 means no explanatory power."
+                                className="px-3 py-1 border border-stone-200 rounded bg-stone-50 text-sm"
+                            >
+                                R²: {MODEL_INFO.metrics.r2}
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
                 <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Input Form Column (Col 1-2) */}
